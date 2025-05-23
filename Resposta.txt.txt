@@ -1,0 +1,28 @@
+1. Como foi feita a integração com a API do ViaCEP?
+A integração com a API do ViaCEP foi bem direta! Eu usei a função `buscarEndereco()` no JavaScript. Basicamente, quando a pessoa digita o CEP, o código faz uma chamada (um `Workspace()`) para o endereço do ViaCEP com aquele número. Aí, se der tudo certo, a API me devolve o endereço completinho (rua, bairro, cidade, estado) e eu preencho isso automaticamente lá no campo de endereço do formulário. Bem prático pra não precisar digitar tudo na mão!
+
+2. Como a imagem aleatória foi gerada?
+Para as fotos de perfil, eu achei um jeito legal de pegar imagens aleatórias direto do Unsplash. Criei a função `gerarFotoPerfil()` que monta uma URL especial para o Unsplash (`https://source.unsplash.com/160x160/?{tema}`). O mais legal é que eu tento usar o primeiro nome do voluntário como "tema" para a foto, assim ela fica um pouco mais personalizada. Se não tiver nome, uso um tema genérico tipo "voluntario". Essa URL é então usada na hora de montar cada card, e a foto já aparece lá!
+
+3. Como você utilizou o LocalStorage?
+O LocalStorage foi meu "salva-vidas" para guardar os dados direto no navegador. Assim, mesmo se a pessoa fechar a página, as informações não se perdem. Eu usei ele pra guardar três coisas principais: as contas de usuário (pra quem se cadastra no sistema), qual usuário está logado no momento (pra manter a sessão ativa) e, claro, a lista completa dos voluntários cadastrados. Basicamente, eu "guardo" (`localStorage.setItem()`) os dados em formato de texto (JSON) e depois "pego" (`localStorage.getItem()`) e transformo de volta em objeto quando preciso.
+
+4. Como você organizou os cards na tela?
+A organização dos cards na tela é feita de forma dinâmica pela função `carregarVoluntarios()`. O que ela faz é o seguinte: primeiro, ela busca todos os voluntários que estão salvos no LocalStorage. Depois, pra cada voluntário, ela cria uma "caixinha" (uma `div`) no HTML, adiciona a classe `card` nela (que já tem um estilo legal no CSS!) e preenche com todas as informações: a foto, o nome, e-mail, endereço e até o clima da cidade! Aí, essas "caixinhas" são adicionadas em um container principal que eu chamei de `cards`. No CSS, esse container usa `display: grid` pra que os cards se organizem de um jeito responsivo, encaixando certinho em telas de vários tamanhos.
+
+5. Como foi implementado o sistema de login e controle de acesso?
+O sistema de login e controle de acesso é bem direto e funciona com algumas funções: `criarConta()`, `fazerLogin()`, `logout()`, e as que controlam a visibilidade da tela (`mostrarTelaCadastroConta()`, `mostrarTelaLogin()`, `mostrarTelaPrincipal()`). Quando alguém cria uma conta, eu salvo os dados (nome, email, senha) no LocalStorage. Ao fazer login, eu checo se o email e a senha batem com o que está salvo. Se sim, eu marco que o usuário está logado e mostro a tela principal. Se a pessoa fizer logout, eu limpo essa informação e ela volta pra tela de login. Basicamente, a visibilidade das telas é controlada escondendo e mostrando os elementos HTML com a classe `hidden`.
+
+6. Como foi feito o controle de e-mail duplicado?
+Para evitar e-mails duplicados, eu implementei uma verificação em dois momentos chave:
+- No cadastro de contas: Antes de criar uma conta nova, eu dou uma olhada em todas as contas já salvas no LocalStorage para ver se o e-mail que a pessoa está tentando usar já existe. Se já tiver, dou um aviso e não deixo cadastrar de novo.
+- No cadastro de voluntários: A mesma lógica se aplica aqui! Antes de adicionar um novo voluntário à lista, eu confiro se o e-mail que ele informou já não pertence a outro voluntário. Se sim, também aviso e impeço o cadastro. É uma forma simples de manter os dados mais organizados.
+
+7. Como foi implementado o redirecionamento após 5 minutos de inatividade?
+Ah, essa foi uma funcionalidade para dar uma "segurança" extra! Eu criei um timer que, se não houver nenhuma interação do usuário (tipo mexer o mouse, digitar ou clicar) por 5 minutos, ele automaticamente faz o logout e volta pra tela de login. Eu tenho uma constante `INACTIVITY_TIMEOUT` pra controlar esse tempo. Toda vez que o usuário faz alguma coisa, eu "reseto" esse timer para que ele comece a contagem de novo. E claro, esse timer só fica ativo se tiver alguém logado.
+
+8. O que você faria diferente se fosse um projeto real?
+Se este fosse um projeto de verdade, daqueles que vão pro ar para um monte de gente usar, eu faria algumas coisas bem diferentes para deixar ele mais robusto e seguro:
+-  Segurança de Autenticação: Nunca, jamais guardaria senhas em texto puro no LocalStorage. Usaria um servidor de verdade, com banco de dados, e guardaria as senhas criptografadas (com hashing). Para sessões, usaria algo como tokens JWT.
+-  Validação Profissional: As validações de formulário seriam muito mais completas, tanto no navegador (pra dar um feedback rápido pro usuário) quanto no servidor (pra garantir que os dados que chegam são válidos e seguros).
+-  Estrutura de Código: Para um projeto maior, eu provavelmente usaria um framework como React, Vue ou Angular. Eles ajudam muito a organizar o código, gerenciar o estado da aplicação e construir interfaces mais complexas de forma eficiente.
